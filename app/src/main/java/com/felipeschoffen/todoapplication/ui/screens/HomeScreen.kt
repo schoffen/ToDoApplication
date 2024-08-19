@@ -20,6 +20,7 @@ fun HomeScreen(modifier: Modifier = Modifier) {
         topBar = { SearchTopBar() }
     ) {
         Column(modifier = Modifier.padding(it)) {
+
             TasksList(
                 tasks = homeViewModel.tasksList,
                 onEdit = {

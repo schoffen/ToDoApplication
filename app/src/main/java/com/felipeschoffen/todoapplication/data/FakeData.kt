@@ -1,9 +1,11 @@
 package com.felipeschoffen.todoapplication.data
 
+import androidx.compose.runtime.mutableStateListOf
+import androidx.compose.runtime.toMutableStateList
 import com.felipeschoffen.todoapplication.ui.model.Task
 
 object FakeData {
-    private val _taskList = mutableListOf(
+    private val _taskList = mutableStateListOf(
         Task(id = 1, label = "Clean the house", completed = false),
         Task(id = 2, label = "Buy groceries", completed = false),
         Task(id = 3, label = "Walk the dog", completed = true),
@@ -16,7 +18,7 @@ object FakeData {
         Task(id = 10, label = "Call parents", completed = true)
     )
 
-    val tasksList = _taskList
+    fun getAllTasks() = _taskList
 
     fun insertTask(task: Task) {
 

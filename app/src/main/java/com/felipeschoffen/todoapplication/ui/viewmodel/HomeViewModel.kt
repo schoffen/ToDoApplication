@@ -7,7 +7,7 @@ import com.felipeschoffen.todoapplication.data.repository.TaskRepository
 import com.felipeschoffen.todoapplication.ui.model.Task
 
 class HomeViewModel(private val repository: TaskRepository) : ViewModel() {
-    val tasksList = repository.tasks.toMutableStateList()
+    val tasksList = repository.getAllTasks().toMutableStateList()
 
     fun insertTask(task: Task) {
         repository.insertTask(task)

@@ -5,11 +5,9 @@ import com.felipeschoffen.todoapplication.data.FakeData
 import com.felipeschoffen.todoapplication.ui.model.Task
 
 class TaskRepository() {
-    val tasks = getAllTasks().toMutableStateList()
+    private var _tasks = FakeData.getAllTasks()
 
-    private fun getAllTasks(): List<Task> {
-        return FakeData.tasksList
-    }
+    fun getAllTasks() = _tasks
 
     fun insertTask(task: Task) {
 
