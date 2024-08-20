@@ -9,7 +9,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
-import com.felipeschoffen.todoapplication.ui.model.Task
+import com.felipeschoffen.todoapplication.data.model.Task
 
 @Composable
 fun TasksList(

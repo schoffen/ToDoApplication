@@ -2,7 +2,7 @@ package com.felipeschoffen.todoapplication.data
 
 import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.toMutableStateList
-import com.felipeschoffen.todoapplication.ui.model.Task
+import com.felipeschoffen.todoapplication.data.model.Task
 
 object FakeData {
     private val _taskList = mutableStateListOf(
@@ -20,8 +20,14 @@ object FakeData {
 
     fun getAllTasks() = _taskList
 
-    fun insertTask(task: Task) {
-
+    fun insertTask(taskLabel: String) {
+        _taskList.add(
+            Task(
+                id = if (_taskList.isNotEmpty())_taskList.last().id + 1 else 1,
+                label = taskLabel,
+                completed = false
+            )
+        )
     }
 
     fun removeTask(task: Task) {
@@ -33,6 +39,13 @@ object FakeData {
             if (task.id == taskId) {
                 task.completed = !task.completed
             }
+        }
+    }
+
+    fun editTask(taskId: Int, taskLabel: String) {
+        _taskList.forEach { task ->
+            if (task.id == taskId)
+                task.label = taskLabel
         }
     }
 }
