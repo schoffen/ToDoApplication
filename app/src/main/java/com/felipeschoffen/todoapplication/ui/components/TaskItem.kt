@@ -59,21 +59,3 @@ fun TaskItem(
         }
     }
 }
-
-@Preview
-@Composable
-fun PreviewItem(modifier: Modifier = Modifier) {
-    var completed by remember {
-        mutableStateOf(false)
-    }
-
-    TaskItem(
-        label = "Clean the house",
-        completed = completed,
-        onEdit = {},
-        onClose = {},
-        onCheckedChange = {
-            completed = !completed
-        }
-    )
-}

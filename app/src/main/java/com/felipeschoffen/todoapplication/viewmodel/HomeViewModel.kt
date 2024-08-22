@@ -8,6 +8,7 @@ import androidx.lifecycle.viewModelScope
 import com.felipeschoffen.todoapplication.data.repository.TaskRepository
 import com.felipeschoffen.todoapplication.data.model.Task
 import kotlinx.coroutines.channels.Channel
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.receiveAsFlow
 import kotlinx.coroutines.launch
 
@@ -80,7 +81,10 @@ class HomeViewModel(private val repository: TaskRepository) : ViewModel() {
     }
 
     fun deleteTask(task: Task) {
-        repository.deleteTask(task)
+        viewModelScope.launch {
+            delay(500)
+            repository.deleteTask(task)
+        }
     }
 
     fun completeTask(taskId: Int) {
