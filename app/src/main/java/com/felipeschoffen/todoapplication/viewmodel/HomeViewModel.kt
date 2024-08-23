@@ -1,7 +1,10 @@
 package com.felipeschoffen.todoapplication.viewmodel
 
+import android.util.Log
+import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.setValue
 import androidx.compose.runtime.toMutableStateList
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
@@ -21,23 +24,19 @@ class HomeViewModel(private val repository: TaskRepository) : ViewModel() {
     private val _uiEvent = Channel<HomeScreenEvent>()
     val uiEvent = _uiEvent.receiveAsFlow()
 
-    data class HomeUiState(
-        var taskList: List<Task>,
-        var showBottomSheetDialog: Boolean,
-        var bottomSheetTaskLabel: String,
-        var bottomSheetOnSend: (String) -> Unit
+    data class BottomSheetDefaults(
+        var showBottomSheetDialog: Boolean = false,
+        var bottomSheetTaskLabel: String = "",
+        var bottomSheetOnSend: (String) -> Unit = {}
     )
 
-    private val _uiState = mutableStateOf(
-        HomeUiState(
-            taskList = repository.getAllTasks().toMutableStateList(),
-            showBottomSheetDialog = false,
-            bottomSheetTaskLabel = "",
-            bottomSheetOnSend = {}
-        )
-    )
+    private val _bottomSheetDefaults = mutableStateOf(BottomSheetDefaults())
+    val bottomSheetDefaults by _bottomSheetDefaults
 
-    val uiState by _uiState
+    private var _allTasksList = repository.getAllTasks().toMutableStateList()
+
+    private var _filteredTasksList: MutableState<List<Task>> = mutableStateOf(_allTasksList)
+    var filteredTasksList by _filteredTasksList
 
     fun onBottomSheetOnDismissRequest() {
         sendBottomSheetHideRequest()
@@ -45,18 +44,18 @@ class HomeViewModel(private val repository: TaskRepository) : ViewModel() {
 
     private fun sendBottomSheetShowRequest() {
         viewModelScope.launch { _uiEvent.send(HomeScreenEvent.ShowBottomSheetDialog) }
-        _uiState.value = _uiState.value.copy(showBottomSheetDialog = true)
+        _bottomSheetDefaults.value = _bottomSheetDefaults.value.copy(showBottomSheetDialog = true)
     }
 
     private fun sendBottomSheetHideRequest() {
         viewModelScope.launch { _uiEvent.send(HomeScreenEvent.HideBottomSheetDialog) }
-        _uiState.value = _uiState.value.copy(showBottomSheetDialog = false)
+        _bottomSheetDefaults.value = _bottomSheetDefaults.value.copy(showBottomSheetDialog = false)
     }
 
     fun onTaskEditClicked(task: Task) {
         sendBottomSheetShowRequest()
-        _uiState.value.bottomSheetTaskLabel = task.label
-        _uiState.value.bottomSheetOnSend = { label ->
+        _bottomSheetDefaults.value.bottomSheetTaskLabel = task.label
+        _bottomSheetDefaults.value.bottomSheetOnSend = { label ->
             editTask(task.id, label)
             sendBottomSheetHideRequest()
         }
@@ -68,8 +67,8 @@ class HomeViewModel(private val repository: TaskRepository) : ViewModel() {
 
     fun onAddTaskClicked() {
         sendBottomSheetShowRequest()
-        _uiState.value.bottomSheetTaskLabel = ""
-        _uiState.value.bottomSheetOnSend = { label ->
+        _bottomSheetDefaults.value.bottomSheetTaskLabel = ""
+        _bottomSheetDefaults.value.bottomSheetOnSend = { label ->
             insertTask(label)
             sendBottomSheetHideRequest()
         }
@@ -89,5 +88,11 @@ class HomeViewModel(private val repository: TaskRepository) : ViewModel() {
 
     fun completeTask(taskId: Int) {
         repository.completeTask(taskId)
+    }
+
+    fun onFilterChange(prefix: String) {
+        _filteredTasksList.value = _allTasksList.filter { task ->
+            task.label.lowercase().contains(prefix.lowercase())
+        }
     }
 }

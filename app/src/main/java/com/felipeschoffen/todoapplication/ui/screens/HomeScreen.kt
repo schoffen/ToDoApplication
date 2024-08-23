@@ -1,5 +1,9 @@
 package com.felipeschoffen.todoapplication.ui.screens
 
+import androidx.compose.animation.animateContentSize
+import androidx.compose.animation.core.FastOutSlowInEasing
+import androidx.compose.animation.core.LinearOutSlowInEasing
+import androidx.compose.animation.core.tween
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material.icons.Icons
@@ -46,7 +50,13 @@ fun HomeScreen(modifier: Modifier = Modifier) {
 
     Scaffold(
         modifier = modifier,
-        topBar = { SearchTopBar() },
+        topBar = {
+            SearchTopBar(
+                onTextChanged = { label ->
+                    homeViewModel.onFilterChange(label)
+                }
+            )
+        },
         floatingActionButton = {
             FloatingActionButton(onClick = {
                 homeViewModel.onAddTaskClicked()
@@ -55,9 +65,15 @@ fun HomeScreen(modifier: Modifier = Modifier) {
             }
         }
     ) {
-        Column(modifier = Modifier.padding(it)) {
+        Column(
+            modifier = Modifier
+                .padding(it)
+                .animateContentSize(
+                    animationSpec = tween(durationMillis = 250, easing = LinearOutSlowInEasing)
+                )
+        ) {
             TasksList(
-                tasks = homeViewModel.uiState.taskList,
+                tasks = homeViewModel.filteredTasksList,
                 onEdit = { task ->
                     homeViewModel.onTaskEditClicked(task)
                 },
@@ -69,11 +85,11 @@ fun HomeScreen(modifier: Modifier = Modifier) {
                 })
         }
 
-        if (homeViewModel.uiState.showBottomSheetDialog) {
+        if (homeViewModel.bottomSheetDefaults.showBottomSheetDialog) {
             BottomSheetDialog(
                 sheetState = sheetState,
-                taskLabel = homeViewModel.uiState.bottomSheetTaskLabel,
-                onSendClicked = homeViewModel.uiState.bottomSheetOnSend,
+                taskLabel = homeViewModel.bottomSheetDefaults.bottomSheetTaskLabel,
+                onSendClicked = homeViewModel.bottomSheetDefaults.bottomSheetOnSend,
                 onDismissRequest = { homeViewModel.onBottomSheetOnDismissRequest() })
         }
     }

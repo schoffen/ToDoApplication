@@ -20,12 +20,17 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import com.felipeschoffen.todoapplication.R
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun SearchTopBar(modifier: Modifier = Modifier) {
+fun SearchTopBar(
+    onTextChanged: (String) -> Unit,
+    modifier: Modifier = Modifier
+) {
     TopAppBar(
         modifier = modifier,
         title = {
@@ -40,9 +45,10 @@ fun SearchTopBar(modifier: Modifier = Modifier) {
                 value = value,
                 onValueChange = {
                     value = it
+                    onTextChanged(value)
                 },
                 placeholder = {
-                    Text(text = "Seach Task")
+                    Text(text = stringResource(id = R.string.search_field_placeholder))
                 },
                 singleLine = true,
                 leadingIcon = {
@@ -63,10 +69,4 @@ fun SearchTopBar(modifier: Modifier = Modifier) {
                 )
             )
         })
-}
-
-@Preview
-@Composable
-fun Preview(modifier: Modifier = Modifier) {
-    SearchTopBar()
 }

@@ -1,4 +1,5 @@
 <resources>
     <string name="app_name">ToDoApplication</string>
     <string name="task_field_placeholder">Type new task...</string>
+    <string name="search_field_placeholder">Search a task here</string>
 </resources>
