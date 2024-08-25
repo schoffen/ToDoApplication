@@ -56,7 +56,10 @@ fun SearchTopBar(
                 },
                 trailingIcon = {
                     if (value.isNotEmpty()) {
-                        IconButton(onClick = { value = "" }) {
+                        IconButton(onClick = {
+                            value = ""
+                            onTextChanged(value)
+                        }) {
                             Icon(imageVector = Icons.Filled.Close, contentDescription = null)
                         }
                     }

@@ -100,9 +100,17 @@ class HomeViewModel(private val repository: TaskRepository) : ViewModel() {
 
     fun onFilterChange(prefix: String) {
         viewModelScope.launch {
-            _allTasksList.collect { tasks ->
-                _filteredTasksList.value =
-                    tasks.filter { it.label.lowercase().contains(prefix.lowercase()) }
+            if (prefix.isEmpty()) {
+                _allTasksList.collect { tasks ->
+                    _filteredTasksList.value = tasks
+                }
+            }
+
+            if (prefix.isNotEmpty()){
+                _allTasksList.collect { tasks ->
+                    _filteredTasksList.value =
+                        tasks.filter { it.label.lowercase().contains(prefix.lowercase()) }
+                }
             }
         }
     }
