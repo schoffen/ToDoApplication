@@ -84,7 +84,7 @@ class HomeViewModel(private val repository: TaskRepository) : ViewModel() {
 
     private fun insertTask(taskLabel: String) {
         if (taskLabel.isNotEmpty())
-            viewModelScope.launch { repository.insertTask(taskLabel) }
+            viewModelScope.launch { repository.insertTask(Task(label = taskLabel)) }
     }
 
     fun deleteTask(task: Task) {
