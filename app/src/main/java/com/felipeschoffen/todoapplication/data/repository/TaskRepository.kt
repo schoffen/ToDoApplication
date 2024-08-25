@@ -1,27 +1,25 @@
 package com.felipeschoffen.todoapplication.data.repository
 
-import androidx.compose.runtime.toMutableStateList
-import com.felipeschoffen.todoapplication.data.FakeData
+import com.felipeschoffen.todoapplication.data.model.Database
 import com.felipeschoffen.todoapplication.data.model.Task
 
-class TaskRepository() {
-    private var _tasks = FakeData.getAllTasks()
+class TaskRepository(private val db: Database) {
 
-    fun getAllTasks() = _tasks
+    suspend fun getAllTasks() = db.getAllTasks()
 
-    fun insertTask(taskLabel: String) {
-        FakeData.insertTask(taskLabel)
+    suspend fun insertTask(taskLabel: String) {
+        db.insertTask(taskLabel)
     }
 
-    fun deleteTask(task: Task) {
-        FakeData.removeTask(task)
+    suspend fun deleteTask(task: Task) {
+        db.removeTask(task)
     }
 
-    fun completeTask(taskId: Int) {
-        FakeData.completeTask(taskId)
+    suspend fun completeTask(taskId: Int) {
+        db.completeTask(taskId)
     }
 
-    fun editTask(taskId: Int, taskLabel: String) {
-        FakeData.editTask(taskId, taskLabel)
+    suspend fun editTask(taskId: Int, taskLabel: String) {
+        db.editTask(taskId, taskLabel)
     }
 }

@@ -1,7 +1,6 @@
 package com.felipeschoffen.todoapplication.ui.screens
 
 import androidx.compose.animation.animateContentSize
-import androidx.compose.animation.core.FastOutSlowInEasing
 import androidx.compose.animation.core.LinearOutSlowInEasing
 import androidx.compose.animation.core.tween
 import androidx.compose.foundation.layout.Column
@@ -15,9 +14,10 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.material3.rememberModalBottomSheetState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Modifier
-import com.felipeschoffen.todoapplication.data.repository.TaskRepository
 import com.felipeschoffen.todoapplication.ui.components.BottomSheetDialog
 import com.felipeschoffen.todoapplication.ui.components.SearchTopBar
 import com.felipeschoffen.todoapplication.ui.components.TasksList
@@ -26,11 +26,11 @@ import kotlinx.coroutines.launch
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun HomeScreen(modifier: Modifier = Modifier) {
-    val homeViewModel = HomeViewModel(TaskRepository())
-
+fun HomeScreen(homeViewModel: HomeViewModel, modifier: Modifier = Modifier) {
     val sheetState = rememberModalBottomSheetState()
     val scope = rememberCoroutineScope()
+
+    val filteredTasks by homeViewModel.filteredTasksList.collectAsState(initial = emptyList())
 
     LaunchedEffect(key1 = homeViewModel) {
 
@@ -73,7 +73,7 @@ fun HomeScreen(modifier: Modifier = Modifier) {
                 )
         ) {
             TasksList(
-                tasks = homeViewModel.filteredTasksList,
+                tasks = filteredTasks,
                 onEdit = { task ->
                     homeViewModel.onTaskEditClicked(task)
                 },

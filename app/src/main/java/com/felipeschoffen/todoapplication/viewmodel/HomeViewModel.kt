@@ -1,17 +1,16 @@
 package com.felipeschoffen.todoapplication.viewmodel
 
-import android.util.Log
-import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.setValue
-import androidx.compose.runtime.toMutableStateList
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.felipeschoffen.todoapplication.data.repository.TaskRepository
 import com.felipeschoffen.todoapplication.data.model.Task
+import com.felipeschoffen.todoapplication.data.repository.TaskRepository
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.delay
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.emptyFlow
 import kotlinx.coroutines.flow.receiveAsFlow
 import kotlinx.coroutines.launch
 
@@ -33,10 +32,19 @@ class HomeViewModel(private val repository: TaskRepository) : ViewModel() {
     private val _bottomSheetDefaults = mutableStateOf(BottomSheetDefaults())
     val bottomSheetDefaults by _bottomSheetDefaults
 
-    private var _allTasksList = repository.getAllTasks().toMutableStateList()
+    private var _allTasksList = emptyFlow<List<Task>>()
+    private var _filteredTasksList = MutableStateFlow<List<Task>>(emptyList())
+    val filteredTasksList = _filteredTasksList.asStateFlow()
 
-    private var _filteredTasksList: MutableState<List<Task>> = mutableStateOf(_allTasksList)
-    var filteredTasksList by _filteredTasksList
+    init {
+        viewModelScope.launch {
+            _allTasksList = repository.getAllTasks()
+
+            _allTasksList.collect { tasks ->
+                _filteredTasksList.value = tasks
+            }
+        }
+    }
 
     fun onBottomSheetOnDismissRequest() {
         sendBottomSheetHideRequest()
@@ -62,7 +70,7 @@ class HomeViewModel(private val repository: TaskRepository) : ViewModel() {
     }
 
     private fun editTask(taskId: Int, taskLabel: String) {
-        repository.editTask(taskId, taskLabel)
+        viewModelScope.launch { repository.editTask(taskId, taskLabel) }
     }
 
     fun onAddTaskClicked() {
@@ -76,7 +84,7 @@ class HomeViewModel(private val repository: TaskRepository) : ViewModel() {
 
     private fun insertTask(taskLabel: String) {
         if (taskLabel.isNotEmpty())
-            repository.insertTask(taskLabel)
+            viewModelScope.launch { repository.insertTask(taskLabel) }
     }
 
     fun deleteTask(task: Task) {
@@ -87,12 +95,15 @@ class HomeViewModel(private val repository: TaskRepository) : ViewModel() {
     }
 
     fun completeTask(taskId: Int) {
-        repository.completeTask(taskId)
+        viewModelScope.launch { repository.completeTask(taskId) }
     }
 
     fun onFilterChange(prefix: String) {
-        _filteredTasksList.value = _allTasksList.filter { task ->
-            task.label.lowercase().contains(prefix.lowercase())
+        viewModelScope.launch {
+            _allTasksList.collect { tasks ->
+                _filteredTasksList.value =
+                    tasks.filter { it.label.lowercase().contains(prefix.lowercase()) }
+            }
         }
     }
 }
