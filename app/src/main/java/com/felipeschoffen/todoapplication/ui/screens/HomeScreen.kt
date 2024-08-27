@@ -30,7 +30,7 @@ fun HomeScreen(homeViewModel: HomeViewModel, modifier: Modifier = Modifier) {
     val sheetState = rememberModalBottomSheetState()
     val scope = rememberCoroutineScope()
 
-    val filteredTasks by homeViewModel.filteredTasksList.collectAsState(initial = emptyList())
+    //val filteredTasks by homeViewModel.filteredTasksList.collectAsState(initial = emptyList())
 
     LaunchedEffect(key1 = homeViewModel) {
 
@@ -73,7 +73,7 @@ fun HomeScreen(homeViewModel: HomeViewModel, modifier: Modifier = Modifier) {
                 )
         ) {
             TasksList(
-                tasks = filteredTasks,
+                tasks = homeViewModel.filteredTasksList.collectAsState().value,
                 onEdit = { task ->
                     homeViewModel.onTaskEditClicked(task)
                 },

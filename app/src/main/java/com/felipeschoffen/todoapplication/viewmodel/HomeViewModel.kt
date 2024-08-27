@@ -1,7 +1,10 @@
 package com.felipeschoffen.todoapplication.viewmodel
 
+import android.util.Log
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.saveable.rememberSaveable
+import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.felipeschoffen.todoapplication.data.model.Task
@@ -34,6 +37,7 @@ class HomeViewModel(private val repository: TaskRepository) : ViewModel() {
 
     private var _allTasksList = emptyFlow<List<Task>>()
     private var _filteredTasksList = MutableStateFlow<List<Task>>(emptyList())
+
     val filteredTasksList = _filteredTasksList.asStateFlow()
 
     init {

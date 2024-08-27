@@ -26,6 +26,7 @@ import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.font.FontStyle
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.unit.dp
 import com.felipeschoffen.todoapplication.R
@@ -46,12 +47,12 @@ fun BottomSheetDialog(
     val focusRequester = remember {
         FocusRequester()
     }
-    
+
     LaunchedEffect(Unit) {
         if (sheetState.isVisible)
             focusRequester.requestFocus()
     }
-    
+
     ModalBottomSheet(onDismissRequest = onDismissRequest, modifier = modifier) {
         Row(
             verticalAlignment = Alignment.CenterVertically,
@@ -67,7 +68,12 @@ fun BottomSheetDialog(
                     focusedContainerColor = Color.Transparent,
                     unfocusedContainerColor = Color.Transparent
                 ),
-                placeholder = { Text(text = stringResource(id = R.string.task_field_placeholder)) },
+                placeholder = {
+                    Text(
+                        text = stringResource(id = R.string.task_field_placeholder),
+                        fontStyle = FontStyle.Italic
+                    )
+                },
                 keyboardOptions = KeyboardOptions(imeAction = ImeAction.Done),
                 keyboardActions = KeyboardActions(onDone = { onSendClicked(value) }),
                 modifier = Modifier
