@@ -1,10 +1,7 @@
 package com.felipeschoffen.todoapplication.viewmodel
 
-import android.util.Log
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.saveable.rememberSaveable
-import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.felipeschoffen.todoapplication.data.model.Task
@@ -12,9 +9,11 @@ import com.felipeschoffen.todoapplication.data.repository.TaskRepository
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.asStateFlow
-import kotlinx.coroutines.flow.emptyFlow
+import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.receiveAsFlow
+import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
 
 class HomeViewModel(private val repository: TaskRepository) : ViewModel() {
@@ -35,17 +34,26 @@ class HomeViewModel(private val repository: TaskRepository) : ViewModel() {
     private val _bottomSheetDefaults = mutableStateOf(BottomSheetDefaults())
     val bottomSheetDefaults by _bottomSheetDefaults
 
-    private var _allTasksList = emptyFlow<List<Task>>()
-    private var _filteredTasksList = MutableStateFlow<List<Task>>(emptyList())
+    private var _filterPrefix = MutableStateFlow("")
+    val filterPrefix = _filterPrefix.asStateFlow()
 
-    val filteredTasksList = _filteredTasksList.asStateFlow()
+    private var _allTasksList = MutableStateFlow<List<Task>>(emptyList())
+    val tasks = _filterPrefix.combine(_allTasksList) { prefix, tasks ->
+        if (prefix.isBlank())
+            tasks
+        else {
+            tasks.filter { task -> task.label.lowercase().contains(prefix.lowercase()) }
+        }
+    }.stateIn(
+        viewModelScope,
+        SharingStarted.WhileSubscribed(5000),
+        _allTasksList.value
+    )
 
     init {
         viewModelScope.launch {
-            _allTasksList = repository.getAllTasks()
-
-            _allTasksList.collect { tasks ->
-                _filteredTasksList.value = tasks
+            repository.getAllTasks().collect {
+                _allTasksList.value = it
             }
         }
     }
@@ -99,23 +107,12 @@ class HomeViewModel(private val repository: TaskRepository) : ViewModel() {
     }
 
     fun completeTask(taskId: Int) {
-        viewModelScope.launch { repository.completeTask(taskId) }
+        viewModelScope.launch {
+            repository.completeTask(taskId)
+        }
     }
 
-    fun onFilterChange(prefix: String) {
-        viewModelScope.launch {
-            if (prefix.isEmpty()) {
-                _allTasksList.collect { tasks ->
-                    _filteredTasksList.value = tasks
-                }
-            }
-
-            if (prefix.isNotEmpty()){
-                _allTasksList.collect { tasks ->
-                    _filteredTasksList.value =
-                        tasks.filter { it.label.lowercase().contains(prefix.lowercase()) }
-                }
-            }
-        }
+    fun onSearchTextChanged(text: String) {
+        _filterPrefix.value = text
     }
 }

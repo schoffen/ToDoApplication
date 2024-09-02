@@ -30,7 +30,8 @@ fun HomeScreen(homeViewModel: HomeViewModel, modifier: Modifier = Modifier) {
     val sheetState = rememberModalBottomSheetState()
     val scope = rememberCoroutineScope()
 
-    //val filteredTasks by homeViewModel.filteredTasksList.collectAsState(initial = emptyList())
+    val tasks by homeViewModel.tasks.collectAsState()
+    val filterPrefix by homeViewModel.filterPrefix.collectAsState()
 
     LaunchedEffect(key1 = homeViewModel) {
 
@@ -52,9 +53,9 @@ fun HomeScreen(homeViewModel: HomeViewModel, modifier: Modifier = Modifier) {
         modifier = modifier,
         topBar = {
             SearchTopBar(
-                onTextChanged = { label ->
-                    homeViewModel.onFilterChange(label)
-                }
+                value = filterPrefix,
+                onTextChanged = homeViewModel::onSearchTextChanged,
+                onClearClicked = homeViewModel::onSearchTextChanged
             )
         },
         floatingActionButton = {
@@ -73,7 +74,7 @@ fun HomeScreen(homeViewModel: HomeViewModel, modifier: Modifier = Modifier) {
                 )
         ) {
             TasksList(
-                tasks = homeViewModel.filteredTasksList.collectAsState().value,
+                tasks = tasks,
                 onEdit = { task ->
                     homeViewModel.onTaskEditClicked(task)
                 },

@@ -2,10 +2,11 @@ package com.felipeschoffen.todoapplication.data.repository
 
 import com.felipeschoffen.todoapplication.data.TasksDao
 import com.felipeschoffen.todoapplication.data.model.Task
+import kotlinx.coroutines.flow.Flow
 
 class TaskRepository(private val db: TasksDao) {
 
-    fun getAllTasks() = db.getAllTasks()
+    fun getAllTasks(): Flow<List<Task>> = db.getAllTasks()
 
     suspend fun insertTask(task: Task) {
         db.insertTask(task)
