@@ -72,6 +72,8 @@ class HomeViewModel(private val repository: TaskRepository) : ViewModel() {
         _bottomSheetDefaults.value = _bottomSheetDefaults.value.copy(showBottomSheetDialog = false)
     }
 
+    // Callbacks
+
     fun onTaskEditClicked(task: Task) {
         sendBottomSheetShowRequest()
         _bottomSheetDefaults.value.bottomSheetTaskLabel = task.label
@@ -79,10 +81,6 @@ class HomeViewModel(private val repository: TaskRepository) : ViewModel() {
             editTask(task.id, label)
             sendBottomSheetHideRequest()
         }
-    }
-
-    private fun editTask(taskId: Int, taskLabel: String) {
-        viewModelScope.launch { repository.editTask(taskId, taskLabel) }
     }
 
     fun onAddTaskClicked() {
@@ -93,6 +91,16 @@ class HomeViewModel(private val repository: TaskRepository) : ViewModel() {
             sendBottomSheetHideRequest()
         }
     }
+
+    fun onSearchTextChanged(text: String) {
+        _filterPrefix.value = text
+    }
+
+    fun onSearchClear() {
+        _filterPrefix.value = ""
+    }
+
+    // CRUD Functions
 
     private fun insertTask(taskLabel: String) {
         if (taskLabel.isNotEmpty())
@@ -112,7 +120,7 @@ class HomeViewModel(private val repository: TaskRepository) : ViewModel() {
         }
     }
 
-    fun onSearchTextChanged(text: String) {
-        _filterPrefix.value = text
+    private fun editTask(taskId: Int, taskLabel: String) {
+        viewModelScope.launch { repository.editTask(taskId, taskLabel) }
     }
 }

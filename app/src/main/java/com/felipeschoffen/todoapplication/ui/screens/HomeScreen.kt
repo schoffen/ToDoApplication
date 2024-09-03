@@ -55,7 +55,7 @@ fun HomeScreen(homeViewModel: HomeViewModel, modifier: Modifier = Modifier) {
             SearchTopBar(
                 value = filterPrefix,
                 onTextChanged = homeViewModel::onSearchTextChanged,
-                onClearClicked = homeViewModel::onSearchTextChanged
+                onClearClicked = homeViewModel::onSearchClear
             )
         },
         floatingActionButton = {

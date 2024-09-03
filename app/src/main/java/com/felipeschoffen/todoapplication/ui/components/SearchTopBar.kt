@@ -27,7 +27,7 @@ import com.felipeschoffen.todoapplication.R
 fun SearchTopBar(
     value: String,
     onTextChanged: (String) -> Unit,
-    onClearClicked: (String) -> Unit,
+    onClearClicked: () -> Unit,
     modifier: Modifier = Modifier
 ) {
     TopAppBar(
@@ -42,7 +42,8 @@ fun SearchTopBar(
                 placeholder = {
                     Text(
                         text = stringResource(id = R.string.search_field_placeholder),
-                        fontStyle = FontStyle.Italic
+                        fontStyle = FontStyle.Italic,
+                        color = Color.LightGray
                     )
                 },
                 singleLine = true,
@@ -55,7 +56,7 @@ fun SearchTopBar(
                 },
                 trailingIcon = {
                     if (value.isNotEmpty()) {
-                        IconButton(onClick = { onClearClicked("") }) {
+                        IconButton(onClick = onClearClicked) {
                             Icon(imageVector = Icons.Filled.Close, contentDescription = null)
                         }
                     }

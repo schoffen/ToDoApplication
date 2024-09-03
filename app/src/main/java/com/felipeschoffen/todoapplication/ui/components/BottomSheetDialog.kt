@@ -71,7 +71,8 @@ fun BottomSheetDialog(
                 placeholder = {
                     Text(
                         text = stringResource(id = R.string.task_field_placeholder),
-                        fontStyle = FontStyle.Italic
+                        fontStyle = FontStyle.Italic,
+                        color = Color.LightGray
                     )
                 },
                 keyboardOptions = KeyboardOptions(imeAction = ImeAction.Done),
