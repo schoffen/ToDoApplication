@@ -8,8 +8,6 @@ A simple and efficient task management app where users can **add**, **delete**, 
 - Delete tasks
 - Update tasks
 - Mark tasks as completed
-- Clean and maintainable code
-- Smooth content animations
 
 ## Upcoming Features
 
